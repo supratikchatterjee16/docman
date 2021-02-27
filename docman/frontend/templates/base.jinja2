@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="theme-color" content="white">
+		<meta name="description" content="Documents manager for TCS">
+		<title>Documents Manager</title>
+		<link rel="stylesheet" href="{{url_for('static', filename='styles/main.css')}}">
+		<link rel="stylesheet" href="{{url_for('static', filename='styles/fontawesome.min.css')}}">
+		<link rel="stylesheet" href="{{url_for('static', filename='styles/bootstrap.min.css')}}">
+		<script src="{{url_for('static', filename='scripts/main.js')}}"></script>
+		<style>
+			#tree{
+				max-height : 82vh;
+				overflow : auto;
+			}
+		</style>
+		<script>
+		</script>
+	</head>
+	<body onload="get_files_list_into('tree')">
+		<footer class="footer text-center w-100 fixed-bottom py-0" id="footer">
+			<div class="row justify-content-center py-2">
+				<span class="col-sm-auto p-0">© 2020 Copyright&nbsp</span>
+				<a class="col-sm-auto p-0" href="https://www.tcs.com/"> Tata Consultancy Services Ltd.</a>
+			</div>
+		</footer>
+		<div class="fixed-top shadow" id="nav">
+			<nav class="navbar navbar-expand-lg navbar-dark"><!-- rgba(44, 84, 156, 1); -->
+			<a class="navbar-brand" onclick="load_page('/home', '/home', 'Home')">
+				<img src="{{url_for('static', filename="images/tata_logo_short.png")}}" width="58" height="30" class="d-inline-block align-top" alt="">
+				<div class="d-inline-block h4" style="color:rgba(250, 250, 250, 1);">Documents Manager</div>
+			</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation" id="main-nav-toggle"><span class="navbar-toggler-icon"></span></button>
+			<div class="collapse navbar-collapse" id="main-navbar">
+				<ul class="navbar-nav ml-auto" id="navbar-options">
+					<li class="nav-item">
+						<a class="nav-link" onclick="environment.page_manager.load_page('/about')" id="about_route">About</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" onclick="environment.security_manager.logout()" id="logout_route">Logout</a>
+					</li>
+				</ul>
+			</div>
+			</nav>
+			<div class="nav nav-tabs px-2" id="tabs" style="border:none;"></div>
+		</div>
+		<div class="container-fluid" style="margin-top : 6.5vh; height : 93.5vh;">
+			<div class="row" style="height : 100%;">
+				<div class="col-sm-3" style="background:rgba(230, 230, 230, 1);color : black;">
+					<div class="row h3 p-2">
+						Documents
+					</div>
+					<div class="row">
+						<input type="text" class="form-control" placeholder="Enter a filename" onkeyup="filter_files(event)">
+						</input>
+					</div>
+					<div class="row" id="tree">
+
+					</div>
+				</div>
+				<div class="col-sm" style="background:rgba(250, 250, 250, 1);">
+					<div class="row h-100">
+						<div class="col-sm-8 pt-4 border-left border-right">
+							<input type="text" class="form-control" placeholder="Search by categories, keywords, tags">
+						</div>
+						<div class="col-sm-4">
+							<div class="row h3 p-2">
+								Info
+							</div>
+							<div class="row">
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="{{url_for('static', filename='scripts/frameworks/responsive/popper.min.js')}}"></script>
+		<script src="{{url_for('static', filename='scripts/frameworks/responsive/jquery.min.js')}}"></script>
+		<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+		<script src="{{url_for('static', filename='scripts/frameworks/responsive/bootstrap.min.js')}}"></script>
+	</body>
+</html>

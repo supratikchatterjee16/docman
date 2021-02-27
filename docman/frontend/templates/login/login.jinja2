@@ -1,0 +1,44 @@
+<div class="container h-100 align-middle">
+	<div class="row justify-content-center">
+		<form class="form-signin p-5 m-5 shadow" action="/login" method="POST">
+			{{ form.csrf_token }}
+			<div class="text-center mb-4">
+			<i class="fa fa-users" style="font-size:36px"></i>
+			</div>
+			<div class="form-group">
+				{% if form.user_id.errors %}
+					{{form.user_id(class="form-control is-invalid")}}
+					<div class="invalid-feedback">
+					{% for error in form.user_id.errors %}
+						<span>{{error}}</span>
+					{% endfor %}
+					</div>
+				{% else %}
+					{{form.user_id(class="form-control")}}
+				{% endif %}
+			</div>
+
+			<div class="form-group">
+				{% if form.password.errors %}
+					{{form.password(class="form-control is-invalid")}}
+					<div class="invalid-feedback">
+					{% for error in form.password.errors %}
+						<span>{{error}}</span>
+					{% endfor %}
+					</div>
+				{% else %}
+					{{form.password(class="form-control")}}<br>
+				{% endif %}
+			</div>
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					{% for message in messages %}
+						<p>{{message}}</p>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			<input type="Submit" class="btn btn-lg btn-outline-primary btn-block" value="Login"></input>
+			<button class="btn btn-lg btn-outline-primary btn-block" onclick="environment.page_manager.initiate_signup()">Sign Up</input>
+		</form>
+	</div>
+</div>

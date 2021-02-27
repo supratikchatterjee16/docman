@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: docman
+Version: 0.0.1
+Summary: Documents manager server with CLI interface
+Home-page: https://github.com/supratikchatterjee16
+Author: Supratik Chatterjee
+Author-email: chatterjee.supratik@tcs.com
+License: UNKNOWN
+Description: UNKNOWN
+Keywords: Python Search Engine Document KMS
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
