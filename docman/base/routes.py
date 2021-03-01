@@ -33,7 +33,7 @@ def list_directory():
 	if request.method == 'GET':
 		rootpath = config['BASE_DIR']
 	else :
-		rootpath = os.path.join(config['BASE_DIR'], *request.data.decode('utf-8').split('/')[1 : -1])
+		rootpath = os.path.join(config['BASE_DIR'], *request.data.decode('utf-8').split('/')[1 : ])
 	return pretty_print(list_dir(rootpath))
 
 @application.route('/get_file', methods=['POST'])
@@ -43,4 +43,26 @@ def get_file():
 	root = os.path.join(config['BASE_DIR'], *split_filepath[1:-1])
 	response = make_response(send_from_directory(root, split_filepath[-1], as_attachment=True))
 	response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+	return response
+
+@application.route('/upload', methods=['POST'])
+def upload(): # POST for upload-processing-tagging
+	from .utils import get_keywords, get_extract
+	# check if the post request has the file part
+	# Add in secure_filepath for directory injection prevention
+	file = request.files['new_file']
+	filename = file.filename
+	# print(config)
+	filepath = os.path.join(config['STAGE_DIR'], filename)
+	file.save(filepath)
+	extract = get_extract(filepath)
+	keywords = get_keywords(extract)
+	suggest = {}
+	suggest['keywords'] = keywords
+	suggest['categories'] = {} # provision to be added on later on
+	import json
+	# json_str = json.dumps(suggest)
+	# print(json_str)
+	response = make_response(suggest)
+	print(response.data)
 	return response

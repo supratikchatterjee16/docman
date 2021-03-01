@@ -58,5 +58,7 @@ def deploy(_config, deployment_type, port=None):
 	global config
 	config = _config
 	config['ROOT_PATH'] = os.path.join('/', *root_filepath)
+	from .utils import nltk_setup
+	nltk_setup()
 	app = create()
 	type[deployment_type](app, port)

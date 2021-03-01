@@ -79,7 +79,14 @@ def run():
 		directory = args.directory[0]
 		if not os.path.isdir(directory):
 			sys.stderr.write('\033[0;31mFilepath provided not recognized as a directory\n\n\033[0m')
+		try:
 			os.makedirs(directory)
+		except:
+			pass
+		try:
+			os.makedirs(os.path.join(directory, 'staging'))
+		except:
+			pass
 	else:
 		if not args.y:
 			resp = input('Use this folder for docman?(y/n) ')
@@ -90,6 +97,7 @@ def run():
 	# Also to force users to identify the folder path to the module,
 	# so that they do not consider it arbitrary
 	config['BASE_DIR'] = directory
+	config['STAGE_DIR'] = os.path.join(directory, 'staging')
 	config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(directory, 'app.db')
 
 	# Dump or Load configurations

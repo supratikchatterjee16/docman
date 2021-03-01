@@ -1,4 +1,8 @@
-// global elements for describing elements
+/** Copyright 2021, Tata Consultancy Services Pvt. Ltd.
+* @author : Supratik Chatterjee
+*
+*/
+// Global utilities
 function request(method, url, data = null){
 	let request = {
 		method : method,
@@ -21,21 +25,64 @@ function request(method, url, data = null){
 		});
 	});
 }
-
+// Add styles for UI
+function directory_styles_init(){
+	let style = document.createElement("style");
+	style.innerHTML = "directory{display : block;margin-left : 10pt;margin-top : 5pt;border-left : 1pt solid rgba(50, 50, 50, 0.5);}directory.name-only file{height : 0pt;display : none;}/* animate directory and file later*/directory.name-only directory{height : 0pt;display : none;}directory.name-only .fa-angle-down{transform : rotate(-90deg);}file{display:block;margin-left : 10pt;transition : all 0.2s ease;}directory .fa, .fas{margin-right : 4pt;margin-left : 4pt;transition : all 0.2s ease;}";
+	document.head.appendChild(style);
+}
+directory_styles_init();
+// UI manager sections
 function fetch_folder_content(relative_path){
 	request('POST', '/list', relative_path)
 		.then((res) => res.json())
 		.then((json) => {
-			console.log(relative_path, json);
+			// console.log(relative_path, json);
+			let descriptor = {
+				'folder' : '<i class="fa fa-folder" style="color:rgb(155, 150, 153)" aria-hidden = "true"></i>',
+				'file' : '<i class="fa fa-file" style="color:rgb(155, 150, 153)" aria-hidden = "true"></i>'
+			};
+			const target = document.getElementById('folders_view');
+			const folder_set = document.createElement('fieldset');
+			const folder_legend = document.createElement('legend');
+			folder_legend.appendChild(document.createTextNode('Folders'));
+			folder_set.appendChild(folder_legend);
+			const file_set = document.createElement('fieldset');
+			const file_legend = document.createElement('legend');
+			file_legend.appendChild(document.createTextNode('Files'));
+			file_set.appendChild(file_legend);
+			target.innerHTML = '';
+			target.appendChild(folder_set);
+			target.appendChild(file_set);
+			let keys = Object.keys(json);
+			let files = [];
+			keys.forEach((element) => {
+				if(element == 'files_list'){
+					json[element].forEach((filename) => {
+						let file = document.createElement('div');
+						file.title = relative_path + '/' + filename;
+						file.innerHTML = descriptor['file'];
+						file.classList.add('folder_element');
+						file.onclick = file_click;
+						file.appendChild(document.createTextNode(filename));
+						file_set.appendChild(file);
+					});
+				}
+				else{
+					let folder = document.createElement('div');
+					folder.title = relative_path + '/' + element;
+					folder.innerHTML = descriptor['folder'];
+					folder.classList.add('folder_element');
+					folder.onclick = folder_click;
+					folder.appendChild(document.createTextNode(element));
+					folder_set.appendChild(folder);
+				}
+			});
 		});
 }
-
 function folder_click(event){
 	const target = event.currentTarget;
-	// console.debug('folder',target);
-	// console.debug(target.title, ', ', target.prefix);
 	target.parentNode.classList.toggle('name-only');
-
 	fetch_folder_content(target.title);
 }
 function get_file(filepath){
@@ -89,6 +136,19 @@ function generate_folder(name, dictionary, prefix = ''){
 	return directory_container;
 }
 var original_files_list = [];
+function get_files_list_into(id){
+	console.info("Refreshing directory structure");
+	request('GET', '/list').then((response) => {
+		response.json().then((data) => {
+			document.getElementById(id).innerHTML = '';
+			const folder = generate_folder('/', data);
+			folder.classList.toggle('name-only');
+			document.getElementById(id).appendChild(folder);
+		});
+	}).catch((error) => {console.error(error);});
+	original_files_list = document.getElementsByTagName('file');
+}
+// Search Functions
 function filter_files(event){
 	const target = event.currentTarget;
 	let filter_text = target.value;
@@ -103,22 +163,42 @@ function filter_files(event){
 	// hide it
 	files_to_hide.forEach((element) => {element.classList.add('collapse');});
 }
-function get_files_list_into(id){
-	console.info("Refreshing directory structure");
-	request('GET', '/list').then((response) => {
-		response.json().then((data) => {
-			document.getElementById(id).innerHTML = '';
-			const folder = generate_folder('/', data);
-			folder.classList.toggle('name-only');
-			document.getElementById(id).appendChild(folder);
-		});
-	}).catch((error) => {console.error(error);});
-	original_files_list = document.getElementsByTagName('file');
+function global_search(event){
+
+}
+// Upload
+function show_upload_control(event){
+	const overlay = document.getElementById('overlay');
+	overlay.innerHTML = "<div class=\"container-flexible\">\
+		<div class=\"row\" style=\"height:20vh;\"></div>\
+		<div class=\"row\" style=\"height:60vh; text-align : center;\">\
+			<div class=\"col-sm-4\">\
+			</div>\
+			<div class=\"col-sm\">\
+				<fieldset style=\"text-align:center;\">\
+					<input type = \"file\" placeholder=\"Upload a file\"\ onchange=\"upload_file(event)\"/>\
+				</fieldset>\
+			</div>\
+			<div class=\"col-sm-4\">\
+			</div>\
+		</div>\
+		<div class=\"row\" style=\"height:20vh;\"></div>\
+	</div>";
+	overlay.hidden = false;
 }
 
-function directory_styles_init(){
-	let style = document.createElement("style");
-	style.innerHTML = "directory{display : block;margin-left : 10pt;margin-top : 5pt;border-left : 1pt solid rgba(50, 50, 50, 0.5);}directory.name-only file{height : 0pt;display : none;}/* animate directory and file later*/directory.name-only directory{height : 0pt;display : none;}directory.name-only .fa-angle-down{transform : rotate(-90deg);}file{display:block;margin-left : 10pt;transition : all 0.2s ease;}directory .fa, .fas{margin-right : 4pt;margin-left : 4pt;transition : all 0.2s ease;}";
-	document.head.appendChild(style);
+function upload_file(event){
+	const files = event.target.files;
+	const random_path = event.target.value;
+	const filename = random_path.substring(random_path.lastIndexOf('\\') + 1);
+	if(files && files[0]){
+		const form = new FormData();
+		form.append('new_file', files[0]);
+		// form.append('filename', filename);
+		request('POST', '/upload', form)
+		.then((success) => success.json())
+		.then((json) => {// TODO Add support for categories
+			console.log(json);
+		});
+	}
 }
-directory_styles_init();

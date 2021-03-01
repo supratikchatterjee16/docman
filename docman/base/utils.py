@@ -1,5 +1,6 @@
 import os
 import json
+from operator import itemgetter
 
 def list_dir(path):
 	res = {}
@@ -23,6 +24,7 @@ def get_top_n(dict_elem, n): # Get top 'n' elements of a dict
 
 # Document utilities
 def nltk_setup():
+	import nltk
 	nltk.download('punkt')
 	nltk.download('stopwords')
 	nltk.download('brown')
@@ -40,9 +42,8 @@ def get_extract(filepath): # Extract the contents of a file
 	text = extract.decode('utf-8')
 	return text
 
-def get_entities(str): # TF-IDF score method
+def get_keywords(str): # TF-IDF score method
 	import math
-	from operator import itemgetter
 	from nltk.tag import pos_tag
 	from nltk.corpus import stopwords
 	from nltk.tokenize import word_tokenize, sent_tokenize, RegexpTokenizer
@@ -57,18 +58,16 @@ def get_entities(str): # TF-IDF score method
 	tf_score = {}
 	idf_score = {}
 	for word in words:
-		x = word.lower()
-		if x.isnumeric():
+		if word.isnumeric():
 			continue
-		if x not in stop_words:
-			if x in tf_score:
-				tf_score[x] += 1
+		if word not in stop_words:
+			if word in tf_score:
+				tf_score[word] += 1
 			else:
-				tf_score[x] = 1
-			if x in idf_score:
-				idf_score[x] = check_sent(x, sentences)
-			else :
-				idf_score[x] = 1
+				tf_score[word] = 1
+			if not word in idf_score:
+				score = check_sent([word], sentences)
+				idf_score[word] = score if score != 0 else 1
 
 	tf_score.update((x, y / len(words)) for x, y in tf_score.items())
 	idf_score.update((x, math.log(int(len(sentences))/y)) for x, y in idf_score.items())
