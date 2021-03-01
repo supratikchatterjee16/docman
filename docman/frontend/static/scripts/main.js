@@ -184,12 +184,13 @@ function show_upload_control(event){
 		</div>\
 		<div class=\"row\" style=\"height:20vh;\"></div>\
 	</div>";
-	overlay.hidden = false;
+	overlay.hidden = !overlay.hidden;
 }
 
 function upload_file(event){
 	const files = event.target.files;
 	const random_path = event.target.value;
+	console.log(random_path);
 	const filename = random_path.substring(random_path.lastIndexOf('\\') + 1);
 	if(files && files[0]){
 		const form = new FormData();
@@ -199,6 +200,7 @@ function upload_file(event){
 		.then((success) => success.json())
 		.then((json) => {// TODO Add support for categories
 			console.log(json);
+			
 		});
 	}
 }

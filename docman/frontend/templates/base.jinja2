@@ -91,7 +91,44 @@
 				</div>
 			</div>
 		</div>
-		<div id="overlay" hidden>
+		<div id="overlay">
+			<div class="container-fluid">
+				<div class="row" style="height:25vh"></div>
+				<div class="row" style="height:50vh;">
+					<div class="col-sm-3"></div>
+					<div class="col-sm" style="background:white;box-shadow : 0px 0px 20px #888888">
+						<div class="row" style="height:100%;">
+							<div class="col-sm-8" style="border-right:1pt solid rgba(150, 150, 150, 0.2)">
+								<div class="row" style="height:50%">
+									<fieldset>
+										<legend>Manage File</legend>
+										<i class="fa fa-file" style="color:rgb(155, 150, 153); font-size : 24pt;" aria-hidden = "true"></i> File With some Name.jpeg
+									</fieldset>
+								</div>
+								<div class="row">
+									<fieldset>
+										<legend>Suggested Keywords</legend>
+										<div id="suggested_keywords">
+											<keyword>Some</keyword>
+											<keyword>Keyword</keyword>
+											<keyword>For</keyword>
+											<keyword>testing</keyword>
+										</div>
+									</fieldset>
+								</div>
+							</div>
+							<div class="col-sm-4">
+								<fieldset>
+									<legend>Categories</legend>
+
+								</fieldset>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-3"></div>
+				</div>
+				<div class="row" style="height:25vh"></div>
+			</div>
 		</div>
 		<div id="upload" onclick="show_upload_control(event)">+</div>
 		<script src="{{url_for('static', filename='scripts/frameworks/responsive/popper.min.js')}}"></script>

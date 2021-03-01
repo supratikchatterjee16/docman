@@ -52,7 +52,6 @@ def upload(): # POST for upload-processing-tagging
 	# Add in secure_filepath for directory injection prevention
 	file = request.files['new_file']
 	filename = file.filename
-	# print(config)
 	filepath = os.path.join(config['STAGE_DIR'], filename)
 	file.save(filepath)
 	extract = get_extract(filepath)
@@ -60,9 +59,5 @@ def upload(): # POST for upload-processing-tagging
 	suggest = {}
 	suggest['keywords'] = keywords
 	suggest['categories'] = {} # provision to be added on later on
-	import json
-	# json_str = json.dumps(suggest)
-	# print(json_str)
 	response = make_response(suggest)
-	print(response.data)
 	return response
