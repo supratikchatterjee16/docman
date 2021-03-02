@@ -157,7 +157,7 @@ function filter_files(event){
 	let files_to_hide = Array.from(original_files_list).filter((element) => {
 		let text = element.childNodes[1].textContent;
 		element.classList.remove('collapse');
-		return !text.includes(filter_text);
+		return !text.toLowerCase().includes(filter_text.toLowerCase());
 	});
 
 	// hide it
@@ -199,8 +199,54 @@ function upload_file(event){
 		request('POST', '/upload', form)
 		.then((success) => success.json())
 		.then((json) => {// TODO Add support for categories
-			console.log(json);
-			
+			const overlay = document.getElementById("overlay");
+			overlay.hidden = false;
+			overlay.innerHTML = "<div class=\"container-fluid\">\
+				<div class=\"row\" style=\"height:25vh\"></div>\
+				<div class=\"row\" style=\"height:50vh;\">\
+					<div class=\"col-sm-3\"></div>\
+					<div class=\"col-sm\" style=\"background:white;box-shadow : 0px 0px 20px #888888\">\
+						<div class=\"row\" style=\"height:100%;\">\
+							<div class=\"col-sm-8\" style=\"border-right:1pt solid rgba(150, 150, 150, 0.2)\">\
+								<div class=\"row\" style=\"height:50%\">\
+									<fieldset>\
+										<legend>Manage File</legend>\
+										<i class=\"fa fa-file\" style=\"color:rgb(155, 150, 153); font-size : 24pt;text-align : center\" aria-hidden = \"true\"></i><div id=\"staged_filename\"></div>\
+									</fieldset>\
+								</div>\
+								<div class=\"row\">\
+									<fieldset>\
+										<legend>Suggested Keywords</legend>\
+										<div id=\"suggested_keywords\"></div>\
+									</fieldset>\
+								</div>\
+							</div>\
+							<div class=\"col-sm-4\">\
+								<fieldset>\
+									<legend>Categories</legend>\
+									<div id=\"suggested_categories\"></div>\
+								</fieldset>\
+							</div>\
+						</div>\
+						<div class=\"row p-2 bg-white border\">\
+							<input type=\"text\" id=\"tagged_keywords\" placeholder=\"Relevant keywords(sperated by semi-colons)\"/>\
+							<input type=\"text\" id=\"tagged_category\" placeholder=\"Category(Single name)\"/>\
+							<button onclick=\"confirm_file\">Finish</button>\
+						</div>\
+					</div>\
+					<div class=\"col-sm-3\"></div>\
+				</div>\
+				<div class=\"row\" style=\"height:25vh\"></div>\
+			</div>";
+			document.getElementById("staged_filename").appendChild(document.createTextNode(json.staged_filename));
+			const keywords = Object.keys(json.keywords);
+			const keywords_section = document.getElementById("suggested_keywords");
+			keywords_section.innerHTML = "";
+			keywords.forEach((element) => {
+				const keyword = document.createElement("keyword");
+				keyword.appendChild(document.createTextNode(element));
+				keywords_section.appendChild(keyword);
+			});
 		});
 	}
 }

@@ -57,6 +57,7 @@ def upload(): # POST for upload-processing-tagging
 	extract = get_extract(filepath)
 	keywords = get_keywords(extract)
 	suggest = {}
+	suggest['staged_filename'] = filename
 	suggest['keywords'] = keywords
 	suggest['categories'] = {} # provision to be added on later on
 	response = make_response(suggest)
