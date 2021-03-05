@@ -1,10 +1,13 @@
-from docman.base import application, config
-
 import os
+
 from flask import render_template, redirect, request, send_from_directory, make_response
 from flask_login import login_required
-from docman.base.security.login import routes
+
+from docman.base import application, config, orm
+from docman.base.models import *
+
 from docman.base.error_routes import *
+from docman.base.security.login import routes
 
 @application.before_request
 def secure_before():
@@ -47,18 +50,48 @@ def get_file():
 
 @application.route('/upload', methods=['POST'])
 def upload(): # POST for upload-processing-tagging
-	from .utils import get_keywords, get_extract
+	from .utils import get_keywords, get_extract, get_keywords_simple
 	# check if the post request has the file part
 	# Add in secure_filepath for directory injection prevention
-	file = request.files['new_file']
-	filename = file.filename
-	filepath = os.path.join(config['STAGE_DIR'], filename)
-	file.save(filepath)
-	extract = get_extract(filepath)
-	keywords = get_keywords(extract)
-	suggest = {}
-	suggest['staged_filename'] = filename
-	suggest['keywords'] = keywords
-	suggest['categories'] = {} # provision to be added on later on
-	response = make_response(suggest)
+	print(request.files)
+	for file in request.files.getlist('files[]'):
+		print(file)
+		print()
+		filename = file.filename
+		filepath = os.path.join(config['BASE_DIR'], filename)
+		file.save(filepath)
+		file_model = Files.add_new(filename, filepath)
+		keywords = get_keywords_simple(get_extract(filepath))
+		for keyword in keywords:
+			Keywords.map(keyword, file_model)
+		# print(keywords)
+	return 'OK'
+
+@application.route('/search', methods=['POST'])
+def search():
+	term = request.form['search']
+	filenames = Files.find(term)
+	keywords = Keywords.find(term)
+	categories = Categories.find(term)
+	result = {
+		'files' : filenames,
+		'keywords' : keywords,
+		'categories' : categories
+	}
+	response = make_response(result)
 	return response
+
+@application.route('/fetch_result', methods=['POST'])
+def fetch_results(): # accept type and value
+	type = request.form['type']
+	val = request.form['id']
+	res = {}
+	res['type'] = type
+	print(type, val)
+	if type == 'file':
+		res['value'] = Files.get_file(val)
+	elif type == 'category':
+		res['value'] = Categories.get_mapped_files(val)
+	elif type == 'keyword':
+		res['value'] = Keywords.get_mapped_files(val)
+	return make_response(res)

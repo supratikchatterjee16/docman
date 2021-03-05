@@ -184,3 +184,7 @@ keyword{
 	color : white;
 	border-radius : 10pt;
 }
+.dropdown-item:hover {
+	background : rgba(150, 150, 150, 1);
+	cursor : pointer;
+}
