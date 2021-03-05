@@ -128,7 +128,7 @@ function search(event){
 		target.innerHTML = '';
 		if(files)target.appendChild(files);
 		if(keywords)target.appendChild(keywords);
-		if(!categories && !files && !keywords)
+		if(!files && !keywords)
 			target.innerHTML = '<div style="text-align:center;width:100%;">Nothing Found</div>';
 	});
 	document.getElementById('search_results').classList.add('show');

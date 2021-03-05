@@ -39,14 +39,14 @@ def home():
 # 		rootpath = os.path.join(config['BASE_DIR'], *request.data.decode('utf-8').split('/')[1 : ])
 # 	return pretty_print(list_dir(rootpath))
 
-@application.route('/get_file', methods=['POST'])
-def get_file():
-	filepath = request.data.decode('utf-8')
-	split_filepath = filepath.split('/')
-	root = os.path.join(config['BASE_DIR'], *split_filepath[1:-1])
-	response = make_response(send_from_directory(root, split_filepath[-1], as_attachment=True))
-	response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
-	return response
+# @application.route('/get_file', methods=['POST'])
+# def get_file():
+# 	filepath = request.data.decode('utf-8')
+# 	split_filepath = filepath.split('/')
+# 	root = os.path.join(config['BASE_DIR'], *split_filepath[1:-1])
+# 	response = make_response(send_from_directory(root, split_filepath[-1], as_attachment=True))
+# 	response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+# 	return response
 
 @application.route('/upload', methods=['POST'])
 def upload(): # POST for upload-processing-tagging
@@ -86,14 +86,11 @@ def search():
 @application.route('/fetch_result', methods=['POST'])
 def fetch_results(): # accept type and value
 	type = request.form['type']
-	val = request.form['id']
+	id = request.form['id']
 	res = {}
-	res['type'] = type
-	print(type, val)
 	if type == 'file':
-		res['value'] = Files.get_file(val)
-	elif type == 'category':
-		res['value'] = Categories.get_mapped_files(val)
+		path = Files.get_file(id)
+		res['value'] = path
 	elif type == 'keyword':
-		res['value'] = Keywords.get_mapped_files(val)
+		res['value'] = Keywords.get_mapped_files(id)
 	return make_response(res)

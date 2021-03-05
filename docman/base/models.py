@@ -32,7 +32,7 @@ class Files(orm.Model, json.JSONEncoder):
 	@staticmethod
 	def get_file(id):
 		files = Files.query.filter_by(document_id = id).first()
-		return [(x.document_id, x.document_name, x.path) for x in files]
+		return [(x.document_id, x.document_name) for x in files]
 
 class Keywords(orm.Model):
 	__tablename__ = 'keywords'
