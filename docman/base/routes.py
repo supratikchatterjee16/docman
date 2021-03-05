@@ -29,15 +29,15 @@ def perform_teardown(error=None):
 def home():
 	return render_template('base.jinja2')
 
-@application.route('/list', methods = ['GET', 'POST'])
-def list_directory():
-	from .utils import pretty_print, list_dir
-	rootpath = ''
-	if request.method == 'GET':
-		rootpath = config['BASE_DIR']
-	else :
-		rootpath = os.path.join(config['BASE_DIR'], *request.data.decode('utf-8').split('/')[1 : ])
-	return pretty_print(list_dir(rootpath))
+# @application.route('/list', methods = ['GET', 'POST'])
+# def list_directory():
+# 	from .utils import pretty_print, list_dir
+# 	rootpath = ''
+# 	if request.method == 'GET':
+# 		rootpath = config['BASE_DIR']
+# 	else :
+# 		rootpath = os.path.join(config['BASE_DIR'], *request.data.decode('utf-8').split('/')[1 : ])
+# 	return pretty_print(list_dir(rootpath))
 
 @application.route('/get_file', methods=['POST'])
 def get_file():
@@ -53,10 +53,7 @@ def upload(): # POST for upload-processing-tagging
 	from .utils import get_keywords, get_extract, get_keywords_simple
 	# check if the post request has the file part
 	# Add in secure_filepath for directory injection prevention
-	print(request.files)
 	for file in request.files.getlist('files[]'):
-		print(file)
-		print()
 		filename = file.filename
 		filepath = os.path.join(config['BASE_DIR'], filename)
 		file.save(filepath)
@@ -64,20 +61,25 @@ def upload(): # POST for upload-processing-tagging
 		keywords = get_keywords_simple(get_extract(filepath))
 		for keyword in keywords:
 			Keywords.map(keyword, file_model)
-		# print(keywords)
 	return 'OK'
 
 @application.route('/search', methods=['POST'])
 def search():
+	from .utils import get_keywords_simple
+	keywords = []
+	files = []
 	term = request.form['search']
-	filenames = Files.find(term)
-	keywords = Keywords.find(term)
-	categories = Categories.find(term)
+	if len(term) > 1:
+		files = Files.find(term) # returns list((document_id, document_name))
+	terms = get_keywords_simple(term)
+	for t in terms:
+		files += Keywords.get_files(t)
+		keywords += Keywords.get_words(t)
 	result = {
-		'files' : filenames,
-		'keywords' : keywords,
-		'categories' : categories
+		'files' : files,
+		'keywords' : keywords
 	}
+	print(result)
 	response = make_response(result)
 	return response
 

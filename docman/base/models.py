@@ -28,13 +28,11 @@ class Files(orm.Model, json.JSONEncoder):
 	def find(term):
 		term = '%' + term + '%'
 		res = Files.query.filter(Files.document_name.ilike(term)).all()
-		return [(file.document_id, file.document_name, file.path) for file in res]
+		return [{'id' :file.document_id, 'name' : file.document_name} for file in res]
 	@staticmethod
-	def get_file(val):
-		files_list = []
-		file = Files.query.filter_by(document_id = val).first()
-		files_list.append(file)
-		return [(x.document_id, x.document_name) for x in files_list]
+	def get_file(id):
+		files = Files.query.filter_by(document_id = id).first()
+		return [(x.document_id, x.document_name, x.path) for x in files]
 
 class Keywords(orm.Model):
 	__tablename__ = 'keywords'
@@ -56,14 +54,18 @@ class Keywords(orm.Model):
 		orm.session.add(files_keywords_map)
 		orm.session.commit()
 	@staticmethod
-	def find(term):
-		term = '%' + term + '%'
-		res = Keywords.query.filter(Keywords.keyword.ilike(term)).all()
-		return [(x.keyword_id, x.keyword) for x in res]
+	def get_files(word):
+		keywords = Keywords.query.filter(Keywords.keyword.ilike(word)).all()
+		keyword_ids = [keyword.keyword_id for keyword in keywords]
+		maps = FilesKeywordsMap.query.filter(FilesKeywordsMap.keyword_id.in_(keyword_ids)).all()
+		document_ids = [map.document_id for map in maps]
+		files = Files.query.filter(Files.document_id.in_(document_ids)).all()
+		return [{'id' :file.document_id, 'name' : file.document_name} for file in files]
 	@staticmethod
-	def get_mapped_files(val):
-		maps = FilesKeywordsMap.query.filter_by(keyword_id = val).all()
-		return Files.document_id.in_([map.document_id for map in maps]).all()
+	def get_words(word):
+		word = '%' + word + '%'
+		keywords = Keywords.query.filter(Keywords.keyword.ilike(word)).all()
+		return [keyword.keyword for keyword in keywords]
 
 class FilesKeywordsMap(orm.Model):
 	__tablename__ = 'documents_keywords_map'
