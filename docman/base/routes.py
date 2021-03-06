@@ -1,6 +1,6 @@
 import os
 
-from flask import render_template, redirect, request, send_from_directory, make_response
+from flask import render_template, redirect, request, send_from_directory, make_response, send_file
 from flask_login import login_required
 
 from docman.base import application, config, orm
@@ -51,7 +51,10 @@ def home():
 @application.route('/get_file', methods=['POST'])
 def get_files():
 	id = request.form['id']
-	return send_file(Files.get_path(id))
+	path = Files.get_path(id)
+	resp = send_file(path, as_attachment=True)
+	print(resp)
+	return resp
 
 @application.route('/upload', methods=['POST'])
 def upload(): # POST for upload-processing-tagging
