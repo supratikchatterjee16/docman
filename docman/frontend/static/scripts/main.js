@@ -73,7 +73,24 @@ function createFieldSet(title){
 	field.appendChild(legend);
 	return field;
 }
-
+function populateFoldersView(json){
+	hide_search();
+	const target = document.getElementById('folders_view');
+	const field = createFieldSet("Files");
+	json.value.forEach((val) => {
+		const file = document.createElement('div');
+		file.classList.add('folder-element');
+		const i = document.createElement('i');
+		i.classList.add('fas', 'fa-file');
+		file.data_id = val.id
+		file.appendChild(i);
+		file.appendChild(document.createTextNode(val.name));
+		file.addEventListener('click', get_file);
+		field.appendChild(file);
+	});
+	target.innerHTML = "";
+	target.appendChild(field);
+}
 function select_search_item(event){
 	const target = event.target;
 	const form = new FormData();
@@ -81,10 +98,7 @@ function select_search_item(event){
 	form.append('id', target.data_id);
 	request('POST', '/fetch_result', form)
 	.then((success) => success.json())
-	.then((json) => {
-		console.log(json);
-	});
-	hide_search();
+	.then((json) => {populateFoldersView(json);});
 }
 
 function search(event){
@@ -117,7 +131,7 @@ function search(event){
 				const div = document.createElement('div');
 				div.classList.add('dropdown-item');
 				div.type = 'keyword';
-				// div.data_id = element[0];
+				div.data_id = element;
 				div.innerHTML = element;
 				div.addEventListener('click', select_search_item);
 				keywords.appendChild(div);
@@ -134,3 +148,32 @@ function search(event){
 	document.getElementById('search_results').classList.add('show');
 }
 function hide_search(){document.getElementById('search_results').classList.remove('show');}
+
+// File fetch
+
+function get_file(event){
+	const form = new FormData();
+	const target = event.target;
+	form.append('id', target.data_id);
+	request('POST', '/get_file', form)
+	.then(response => response.blob())
+	.then(blob => {
+		var url = window.URL.createObjectURL(blob);
+		var a = document.createElement('a');
+		a.href = url;
+		a.download = "filename.xlsx";
+		document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+		a.click();
+		a.remove();  //afterwards we remove the element again
+	});
+}
+
+// Initial script
+function fetch_all(){
+	request('GET', '/fetch_result')
+	.then((success) => success.json())
+	.then((json) => {populateFoldersView(json);});
+}
+function init(){
+	fetch_all();
+}

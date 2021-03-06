@@ -82,7 +82,7 @@ def get_keywords_simple(str):
 		wtr = word.lower()
 		if not wtr.isalpha():
 			continue
-		if word in all_stopwords:
+		if wtr in all_stopwords:
 			continue
 		else:
 			words[wtr] = 1

@@ -31,8 +31,12 @@ class Files(orm.Model, json.JSONEncoder):
 		return [{'id' :file.document_id, 'name' : file.document_name} for file in res]
 	@staticmethod
 	def get_file(id):
-		files = Files.query.filter_by(document_id = id).first()
-		return [(x.document_id, x.document_name) for x in files]
+		file = Files.query.filter_by(document_id = id).first()
+		return [{'id' : file.document_id, 'name' : file.document_name}]
+	@staticmethod
+	def get_list():
+		files = Files.query.all()
+		return [{'id' : file.document_id, 'name' : file.document_name} for file in files]
 
 class Keywords(orm.Model):
 	__tablename__ = 'keywords'
@@ -66,6 +70,9 @@ class Keywords(orm.Model):
 		word = '%' + word + '%'
 		keywords = Keywords.query.filter(Keywords.keyword.ilike(word)).all()
 		return [keyword.keyword for keyword in keywords]
+	@staticmethod
+	def get_file(id):
+		return Files(path).query.filter_by(id=id).first()
 
 class FilesKeywordsMap(orm.Model):
 	__tablename__ = 'documents_keywords_map'

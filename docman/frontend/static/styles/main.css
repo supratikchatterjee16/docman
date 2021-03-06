@@ -138,7 +138,7 @@ body.dark #footer{
 	margin-left : 10pt;
 	width : 100%;
 }
-#folders_view .folder_element{
+#folders_view .folder-element{
 	display:inline-block;
 	width : 23.5%;
 	border-radius : 5pt;
@@ -158,7 +158,7 @@ body.dark #footer{
 	text-overflow : ellipsis;
 }
 
-#folders_view .folder_element i{
+#folders_view .folder-element i{
 	font-size : 14pt;
 	margin-right : 5pt;
 	text-align : center;
@@ -169,7 +169,7 @@ body.dark #footer{
 	50% {left : -100%;}
 	100% {left : 0%;}
 }
-#folders_view .folder_element #text:hover{
+#folders_view .folder-element #text:hover{
 	background : white;
 	animation : animation: marquee 5s linear infinite;
 }

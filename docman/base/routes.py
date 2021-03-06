@@ -48,6 +48,11 @@ def home():
 # 	response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
 # 	return response
 
+@application.route('/get_file', methods=['POST'])
+def get_files():
+	id = request.form['id']
+	return send_file(Files.get_path(id))
+
 @application.route('/upload', methods=['POST'])
 def upload(): # POST for upload-processing-tagging
 	from .utils import get_keywords, get_extract, get_keywords_simple
@@ -83,14 +88,19 @@ def search():
 	response = make_response(result)
 	return response
 
-@application.route('/fetch_result', methods=['POST'])
+@application.route('/fetch_result', methods=['GET', 'POST'])
 def fetch_results(): # accept type and value
-	type = request.form['type']
-	id = request.form['id']
 	res = {}
-	if type == 'file':
-		path = Files.get_file(id)
-		res['value'] = path
-	elif type == 'keyword':
-		res['value'] = Keywords.get_mapped_files(id)
-	return make_response(res)
+	if request.method == 'POST':
+		type = request.form['type']
+		id = request.form['id']
+		res = {}
+		if type == 'file':
+			path = Files.get_file(id)
+			res['value'] = path
+		elif type == 'keyword':
+			res['value'] = Keywords.get_files(id)
+	elif request.method == 'GET':
+		res['value'] = Files.get_list()
+	response = make_response(res)
+	return response
