@@ -1,7 +1,7 @@
 import os
 import json
+import hashlib
 from operator import itemgetter
-
 def list_dir(path):
 	res = {}
 	res['files_list'] = []
@@ -87,3 +87,10 @@ def get_keywords_simple(str):
 		else:
 			words[wtr] = 1
 	return list(words.keys())
+
+def get_sha256sum(filepath):
+	sha256_hash = hashlib.sha256()# 64 characters long
+	with open(filepath, 'rb') as f:
+		for byte_block in iter(lambda: f.read(4096),b""):
+			sha256_hash.update(byte_block)
+	return sha256_hash.hexdigest()

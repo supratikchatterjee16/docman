@@ -96,7 +96,8 @@ body.dark{
 
 /* Navigation element */
 #nav{
-	background:rgba(44, 84, 156, 1);
+	/* background:rgba(44, 84, 156, 1); */
+	background : linear-gradient(to bottom right, #614385, #516395);
 }
 body.dark #nav{
 	background:linear-gradient(165deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.3), rgba(250, 250, 250, 0), rgba(255, 255, 255, 0));
@@ -156,12 +157,15 @@ body.dark #footer{
 	hyphens: unset;
 	white-space: nowrap;
 	text-overflow : ellipsis;
+	box-shadow : 0pt 0pt 20pt rgba(50, 50, 50, 0.3);
+	color : rgba(70, 70, 70, 1);
 }
 
 #folders_view .folder-element i{
 	font-size : 14pt;
-	margin-right : 5pt;
+	margin-right : 10pt;
 	text-align : center;
+	color : rgba(120, 120, 120, 1);
 }
 
 @keyframes marquee{

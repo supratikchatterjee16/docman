@@ -41,20 +41,20 @@
 			</div>
 		</footer>
 		<div class="fixed-top shadow" id="nav" style="height : 7vh; max-height : 7vh;">
-			<nav class="navbar navbar-expand-lg navbar-dark"><!-- rgba(44, 84, 156, 1); -->
-			<a class="navbar-brand" style="padding-top:10pt;" onclick="load_page('/home', '/home', 'Home')">
+			<nav class="navbar navbar-expand-lg navbar-dark" style="height:100%"><!-- rgba(44, 84, 156, 1); -->
+			<a class="navbar-brand align-middle" style="" onclick="load_page('/home', '/home', 'Home')">
 				<img src="{{url_for('static', filename="images/tata_logo_short.png")}}" width="58" height="30" class="d-inline-block align-top" alt="">
 				<div class="d-inline-block h4" style="color:rgba(250, 250, 250, 1);">Documents Manager</div>
 			</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation" id="main-nav-toggle"><span class="navbar-toggler-icon"></span></button>
-			<div class="collapse navbar-collapse" id="main-navbar">
+			<button class="navbar-toggler align-middle" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation" id="main-nav-toggle"><span class="navbar-toggler-icon"></span></button>
+			<div class="collapse navbar-collapse align-middle" id="main-navbar">
 				<ul class="navbar-nav ml-auto" id="navbar-options">
 					<li class="nav-item">
 						<a class="nav-link" onclick="environment.page_manager.load_page('/about')" id="about_route">About</a>
 					</li>
-					<li class="nav-item">
+					<!-- <li class="nav-item">
 						<a class="nav-link" onclick="environment.security_manager.logout()" id="logout_route">Logout</a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 			</nav>

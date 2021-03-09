@@ -5,7 +5,9 @@ from datetime import datetime
 from docman.base import orm
 from docman import config
 
-class Files(orm.Model, json.JSONEncoder):
+from docman.base.utils import get_keywords_simple, get_extract, get_sha256sum
+
+class Files(orm.Model):
 	__tablename__ = 'documents'
 	__table_args__ = (
 		orm.PrimaryKeyConstraint('document_id'),
@@ -13,17 +15,48 @@ class Files(orm.Model, json.JSONEncoder):
 	document_id = orm.Column(orm.Integer, primary_key = True)
 	document_name = orm.Column(orm.String(200), unique=True)
 	# NOTE : checksum for 2 files can thereotically be same.
+	checksum = orm.Column(orm.String(64))
 	insert_timestamp = orm.Column(orm.DateTime, default=datetime.now())
 	last_updated = orm.Column(orm.DateTime, onupdate=datetime.now())
 	path = orm.Column(orm.String(1000), nullable = True)
 	@staticmethod
 	def add_new(filename, filepath):
-		file = Files.query.filter_by(document_name = filename).first()
-		if file == None:
-			file = Files(document_name = filename, path=filepath)
-			orm.session.add(file)
-			orm.session.commit()
-		return file
+		# values to be returned
+		file = None
+		exists = False
+		determiner = None
+		# Pre-calculated values
+		supported_extensions = [".csv", ".doc", ".docx", ".eml", ".epub", ".gif", ".jpg", ".jpeg", ".json", ".html", ".htm", ".mp3", ".msg", ".odt", ".ogg", ".pdf", ".png", ".pptx", ".ps", ".rtf", ".tiff", ".tif", ".txt", ".wav", ".xlsx", ".xls"]
+		checksum = get_sha256sum(filepath)
+		extension = filename[filename.find('.') : ]
+		# Primary file insertion logic
+		if extension in supported_extensions:
+			file = Files.query.filter_by(document_name = filename).first()
+			if file == None:
+				file = Files.query.filter_by(checksum = checksum).first()
+			else:
+				exists = True
+				determiner = 'filename'
+			if file == None:
+				file = Files(document_name = filename, path=filepath)
+				orm.session.add(file)
+				try:
+					keywords = get_keywords_simple(get_extract(filepath))
+					orm.session.commit()
+					for keyword in keywords:
+						Keywords.map(keyword, file)
+				except:
+					determiner = 'unindexed'
+			else :
+				exists = True
+				determiner = 'checksum'
+		else:
+			determiner = 'unsupported'
+		if exists:
+			if file.path != filepath:
+				file.path = filepath
+				orm.session.commit()
+		return file, exists, determiner
 	@staticmethod
 	def find(term):
 		term = '%' + term + '%'

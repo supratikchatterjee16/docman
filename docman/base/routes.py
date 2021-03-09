@@ -7,7 +7,28 @@ from docman.base import application, config, orm
 from docman.base.models import *
 
 from docman.base.error_routes import *
-from docman.base.security.login import routes
+from docman.base.security.login.routes import *
+
+@application.before_first_request
+def scan_base_dir():
+	from docman.base.utils import list_dir
+	dir_list = list_dir(config['BASE_DIR'])
+	def track_if_untracked(filename, path):
+		vals = Files.add_new(filename, path)
+		if not vals[1]:
+			if vals[2] != 'unsupported':
+				print(filename, " was added.")
+			else:
+				print(filename, "is unsupported, hence not tracked.")
+	def check(path):
+		for entry in os.listdir(path):
+			if not entry in ['app.db', 'config.json', 'staging']:
+				if os.path.isdir(os.path.join(path,entry)):
+					check(os.path.join(path,entry))
+				elif os.path.isfile(os.path.join(path, entry)) :
+					track_if_untracked(entry, os.path.join(path, entry))
+	check(config['BASE_DIR'])
+
 
 @application.before_request
 def secure_before():
@@ -53,7 +74,7 @@ def get_files():
 	id = request.form['id']
 	path = Files.get_path(id)
 	resp = send_file(path, as_attachment=True)
-	print(resp)
+	# print(resp)
 	return resp
 
 @application.route('/upload', methods=['POST'])
@@ -66,9 +87,6 @@ def upload(): # POST for upload-processing-tagging
 		filepath = os.path.join(config['BASE_DIR'], filename)
 		file.save(filepath)
 		file_model = Files.add_new(filename, filepath)
-		keywords = get_keywords_simple(get_extract(filepath))
-		for keyword in keywords:
-			Keywords.map(keyword, file_model)
 	return 'OK'
 
 @application.route('/search', methods=['POST'])
@@ -87,7 +105,7 @@ def search():
 		'files' : files,
 		'keywords' : keywords
 	}
-	print(result)
+	# print(result)
 	response = make_response(result)
 	return response
 

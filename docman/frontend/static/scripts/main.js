@@ -33,35 +33,56 @@ function directory_styles_init(){
 }
 directory_styles_init();
 
-// Upload
-function show_upload_control(event){
+// Common UI controls
+
+function show_overlay(content = '<input type = \"file\" placeholder=\"Upload a file\" onchange=\"upload_file(event)\" multiple/>'){
 	const overlay = document.getElementById('overlay');
-	overlay.innerHTML = "<div class=\"container-flexible\">\
-		<div class=\"row\" style=\"height:20vh;\"></div>\
-		<div class=\"row\" style=\"height:60vh; text-align : center;\">\
+	const overlay_parser = new DOMParser();
+	const main_template = "<div class=\"container-flexible\">\
+		<div class=\"row\" style=\"height:30vh;\"></div>\
+		<div class=\"row\" style=\"height:40vh; text-align : center;\">\
 			<div class=\"col-sm-4\">\
 			</div>\
 			<div class=\"col-sm\">\
 				<fieldset style=\"text-align:center;\">\
-					<input type = \"file\" placeholder=\"Upload a file\"\ onchange=\"upload_file(event)\" multiple/>\
 				</fieldset>\
 			</div>\
 			<div class=\"col-sm-4\">\
 			</div>\
 		</div>\
-		<div class=\"row\" style=\"height:20vh;\"></div>\
+		<div class=\"row\" style=\"height:30vh;\"></div>\
 	</div>";
-	overlay.hidden = !overlay.hidden;
+	const overlay_content = overlay_parser.parseFromString(main_template, 'text/html');
+	overlay_content.getElementsByTagName('fieldset')[0].innerHTML = content;
+	overlay.innerHTML = '';
+	overlay.appendChild(overlay_content.getRootNode().body);
+	overlay.hidden = false;
+}
+function hide_overlay(){document.getElementById('overlay').hidden = true;}
+function toggle_overlay(content=null){
+	if(document.getElementById('overlay').hidden == true){
+		(content)? show_overlay(content) : show_overlay();
+	}
+	else{hide_overlay();}
+}
+// Upload
+function show_upload_control(event){
+	toggle_overlay();
 }
 
 function upload_file(event){
 	const files = event.target.files;
 	const form = new FormData();
+	show_overlay("<div>Listing...</div>");
 	for(let i =0; i<files.length; i++)
 		form.append('files[]', files[i], files[i].filename);
+	console.log('Upload');
+	show_overlay("<div>Uploading...</div>");
 	request('POST', '/upload', form)
 	.then((success) => {
-		overlay.hidden = true;
+		alert("All files added succesfully");
+		hide_overlay();
+		fetch_all();
 	});
 }
 
@@ -103,7 +124,10 @@ function select_search_item(event){
 
 function search(event){
 	const val = event.target.value;
-	if(val.length < 1) return null;
+	if(val.length < 1){
+		hide_search();
+		return;
+	}
 	const form = new FormData();
 	form.append('search', val);
 	document.getElementById('search_results').innerHTML = '<div style="text-align:center;width:100%;">Loading...</div>';
