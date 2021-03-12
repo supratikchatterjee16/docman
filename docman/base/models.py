@@ -38,20 +38,23 @@ class Files(orm.Model):
 				exists = True
 				determiner = 'filename'
 			if file == None:
-				file = Files(document_name = filename, path=filepath)
+				file = Files(document_name = filename, checksum = checksum, path=filepath)
 				orm.session.add(file)
+				orm.session.commit()
 				try:
 					keywords = get_keywords_simple(get_extract(filepath))
-					orm.session.commit()
 					for keyword in keywords:
 						Keywords.map(keyword, file)
+					orm.session.commit()
 				except:
+					orm.session.rollback()
 					determiner = 'unindexed'
 			else :
 				exists = True
 				determiner = 'checksum'
 		else:
 			determiner = 'unsupported'
+			orm.session.rollback()
 		if exists:
 			if file.path != filepath:
 				file.path = filepath

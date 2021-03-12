@@ -86,8 +86,32 @@ def upload(): # POST for upload-processing-tagging
 		filename = file.filename
 		filepath = os.path.join(config['BASE_DIR'], filename)
 		file.save(filepath)
-		file_model = Files.add_new(filename, filepath)
+		try:
+			file_model, exists, determiner = Files.add_new(filename, filepath)
+		except:
+			abort(417)
 	return 'OK'
+
+def get_file_counts(arr):
+	counts = {}
+	if len(arr) == 0:
+		return None
+	for i in arr:
+		try:
+			counts[i['name']][0] += 1
+		except:
+			counts[i['name']] = (1, i)
+	values_sorted = sorted(set([val[0] for val in counts.values()]), reverse = True)
+	max_count = max(values_sorted)
+	res = []
+	for i in values_sorted:
+		if i < max_count - 1:
+			break
+		for k,v in counts.items():
+			if v[0] == i:
+				res.append(v[1])
+	# print(res)
+	return res
 
 @application.route('/search', methods=['POST'])
 def search():
@@ -101,6 +125,7 @@ def search():
 	for t in terms:
 		files += Keywords.get_files(t)
 		keywords += Keywords.get_words(t)
+	files = get_file_counts(files)
 	result = {
 		'files' : files,
 		'keywords' : keywords

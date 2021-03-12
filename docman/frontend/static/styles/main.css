@@ -160,7 +160,7 @@ body.dark #footer{
 	hyphens: unset;
 	white-space: nowrap;
 	text-overflow : ellipsis;
-	box-shadow : 0pt 0pt 20pt rgba(50, 50, 50, 0.3);
+	box-shadow : 0pt 0pt 20pt rgba(50, 50, 50, 0.1);
 	color : rgba(70, 70, 70, 1);
 }
 
