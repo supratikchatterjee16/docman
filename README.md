@@ -21,3 +21,8 @@ This can be started as the following:
 ```
 docman --directory <PATH> --type test --port <PORT>
 ```
+
+## Additional
+
+[Work Areas for later](worklog_focus_areas.md)
+[Documentation](documentation/documentation.md)
