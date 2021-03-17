@@ -24,5 +24,7 @@ docman --directory <PATH> --type test --port <PORT>
 
 ## Additional
 
+Some additional information related to the project.
+
+[Documentation](documentation/documentation.md)  
 [Work Areas for later](worklog_focus_areas.md)  
-[Documentation](documentation/documentation.md)
