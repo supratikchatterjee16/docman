@@ -1,8 +1,15 @@
+# Copyright 2021, Tata Consultancy Services Pvt. Ltd.
+# @author Supratik Chatterjee
+
 import os
 import json
 import hashlib
 from operator import itemgetter
+
 def list_dir(path):
+	# Utility for listing the contents of the directory as a dictionary
+	# Sub-directories are dictionaries with directory-name as key
+	# Files are store in 'files_list' key inside each directory listing
 	res = {}
 	res['files_list'] = []
 	for entry in os.listdir(path):

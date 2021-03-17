@@ -1,7 +1,9 @@
+# Copyright 2021, Tata Consultancy Services Pvt. Ltd.
+# @author Supratik Chatterjee
+
 import os
 
 from flask import Flask
-from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 frontend_filepath_temp = os.path.dirname(os.path.realpath(__file__)).split(os.path.sep)
@@ -14,8 +16,6 @@ application = Flask(__name__,
 )# Add the template_folder and static_folder
 
 orm = SQLAlchemy()
-login_manager = LoginManager()
-# csrf = CSRFProtect()
 
 def create():
 	global application, orm, login_manager, config
@@ -23,10 +23,8 @@ def create():
 	application.config.update(SECRET_KEY = os.urandom(32))
 	from docman.base import routes, models
 	orm.init_app(application)
-	login_manager.init_app(application)
 	with application.app_context():
 		orm.create_all(bind=None)# Only the main connection
-	# print('Routes : ', application.url_map)
 	return application
 
 def deploy(_config, deployment_type, port=None):

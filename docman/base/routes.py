@@ -1,3 +1,6 @@
+# Copyright 2021, Tata Consultancy Services Pvt. Ltd.
+# @author Supratik Chatterjee
+
 import os
 
 from flask import render_template, redirect, request, send_from_directory, make_response, send_file
@@ -7,7 +10,6 @@ from docman.base import application, config, orm
 from docman.base.models import *
 
 from docman.base.error_routes import *
-from docman.base.security.login.routes import *
 
 @application.before_first_request
 def scan_base_dir():

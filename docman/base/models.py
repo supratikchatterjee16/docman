@@ -1,3 +1,6 @@
+# Copyright 2021, All rights reserved by TCSL
+# @author Supratik Chatterjee
+
 import json
 
 from datetime import datetime
