@@ -1,0 +1,2 @@
+mkdir ./wheels
+pip3 download -r ./docman.egg-info/requires.txt -d ./wheels/
